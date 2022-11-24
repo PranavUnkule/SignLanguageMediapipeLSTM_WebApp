@@ -59,18 +59,19 @@ def main():
         if video_file:
             tfile = tempfile.NamedTemporaryFile(delete=False)
             tfile.write(video_file.read())
-            st.header("Live Feed")
-            process = st.checkbox('Run')
+            st.header("Recorded Video")
+            # process = st.checkbox('Run')
             FRAME_WINDOW = st.image([])
-            webcam = cv2.VideoCapture(0)
-
-            while process:
+            while st.button("Process"):
+                webcam = cv2.VideoCapture(tfile.name)
                 with mp_holistic.Holistic(min_detection_confidence=0.35, min_tracking_confidence=0.5) as holistic:
                     while webcam.isOpened():
 
                         # Read feed
                         ret, frame = webcam.read()
-
+                        if ret is False:
+                            st.stop()
+                            break
                         # Make detections
                         image, results = mediapipe_detection(frame, holistic)
                         print(results)
@@ -112,7 +113,11 @@ def main():
                         cv2.putText(image, "Put your hand gestures in the rectangle", (5, 60), cv2.FONT_HERSHEY_COMPLEX,
                                     0.5, (0, 0, 0))
                         cv2.putText(image, "Press 'q' to exit.", (5, 75), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
-                        FRAME_WINDOW.image(frame)
+                        try:
+                            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                            FRAME_WINDOW.image(image)
+                        except:
+                            FRAME_WINDOW.image()
             else:
                 st.write('Stopped')
 
@@ -134,7 +139,9 @@ def main():
 
                     # Read feed
                     ret, frame = webcam.read()
-
+                    if ret is False:
+                        st.stop()
+                        break
                     # Make detections
                     image, results = mediapipe_detection(frame, holistic)
                     print(results)
@@ -148,7 +155,7 @@ def main():
                     sequence = sequence[-75:]
 
                     if len(sequence) == 75:
-                        sentence = []
+                        #sentence = []
                         res = model.predict(np.expand_dims(sequence, axis=0))[0]
                         print(actions[np.argmax(res)])
                         predictions.append(np.argmax(res))
@@ -176,7 +183,8 @@ def main():
                     cv2.putText(image, "Put your hand gestures in the rectangle", (5, 60), cv2.FONT_HERSHEY_COMPLEX,
                                 0.5, (0, 0, 0))
                     cv2.putText(image, "Press 'q' to exit.", (5, 75), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
-                    FRAME_WINDOW.image(frame)
+                    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                    FRAME_WINDOW.image(image)
         else:
             st.write('Stopped')
 
