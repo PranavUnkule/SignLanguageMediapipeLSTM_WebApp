@@ -1,14 +1,8 @@
 import cv2
 import numpy as np
 import os
-from matplotlib import pyplot as plt
-import time
 import mediapipe as mp
-#from scipy import stats
 import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense
-from tensorflow.keras.callbacks import TensorBoard
 
 
 mp_holistic = mp.solutions.holistic # Holistic model
