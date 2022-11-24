@@ -4,7 +4,7 @@ import os
 import numpy as np
 import mediapipe as mp
 import tempfile
-from Mediapipe_LSTM_Classifier import load_lstm, predict_lstm, prob_viz, draw_styled_landmarks, mediapipe_detection, extract_keypoints
+from Mediapipe_LSTM_Classifier import load_lstm, draw_styled_landmarks, mediapipe_detection, extract_keypoints
 
 mp_holistic = mp.solutions.holistic # Holistic model
 mp_drawing = mp.solutions.drawing_utils # Drawing utilities
