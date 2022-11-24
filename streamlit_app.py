@@ -35,7 +35,7 @@ def main():
     st.sidebar.write("")
 
     activities = [
-        "Use Pre-recorded video", "Live Detection"]
+        "Use Pre-recorded video"]#, "Live Detection"]
     choice = st.sidebar.selectbox("", activities)
 
     st.sidebar.write("")
@@ -122,71 +122,71 @@ def main():
                 st.write('Stopped')
 
 
-    if choice == "Live Detection":
-        model = load_lstm()
-        sequence = []
-        sentence = []
-        predictions = []
-        threshold = 0.5
-        st.header("Live Feed")
-        run = st.checkbox('Run')
-        FRAME_WINDOW = st.image([])
-        webcam = cv2.VideoCapture(0)
+#     if choice == "Live Detection":
+#         model = load_lstm()
+#         sequence = []
+#         sentence = []
+#         predictions = []
+#         threshold = 0.5
+#         st.header("Live Feed")
+#         run = st.checkbox('Run')
+#         FRAME_WINDOW = st.image([])
+#         webcam = cv2.VideoCapture(0)
 
-        while run:
-            with mp_holistic.Holistic(min_detection_confidence=0.35, min_tracking_confidence=0.5) as holistic:
-                while webcam.isOpened():
+#         while run:
+#             with mp_holistic.Holistic(min_detection_confidence=0.35, min_tracking_confidence=0.5) as holistic:
+#                 while webcam.isOpened():
 
-                    # Read feed
-                    ret, frame = webcam.read()
-                    if ret is False:
-                        st.stop()
-                        break
-                    # Make detections
-                    image, results = mediapipe_detection(frame, holistic)
-                    print(results)
+#                     # Read feed
+#                     ret, frame = webcam.read()
+#                     if ret is False:
+#                         st.stop()
+#                         break
+#                     # Make detections
+#                     image, results = mediapipe_detection(frame, holistic)
+#                     print(results)
 
-                    # Draw landmarks
-                    draw_styled_landmarks(image, results)
+#                     # Draw landmarks
+#                     draw_styled_landmarks(image, results)
 
-                    # 2. Prediction logic
-                    keypoints = extract_keypoints(results)
-                    sequence.append(keypoints)
-                    sequence = sequence[-75:]
+#                     # 2. Prediction logic
+#                     keypoints = extract_keypoints(results)
+#                     sequence.append(keypoints)
+#                     sequence = sequence[-75:]
 
-                    if len(sequence) == 75:
-                        #sentence = []
-                        res = model.predict(np.expand_dims(sequence, axis=0))[0]
-                        print(actions[np.argmax(res)])
-                        predictions.append(np.argmax(res))
+#                     if len(sequence) == 75:
+#                         #sentence = []
+#                         res = model.predict(np.expand_dims(sequence, axis=0))[0]
+#                         print(actions[np.argmax(res)])
+#                         predictions.append(np.argmax(res))
 
-                        # 3. Viz logic
-                        if np.unique(predictions[-10:])[0] == np.argmax(res):
-                            if res[np.argmax(res)] > threshold:
+#                         # 3. Viz logic
+#                         if np.unique(predictions[-10:])[0] == np.argmax(res):
+#                             if res[np.argmax(res)] > threshold:
 
-                                if len(sentence) > 0:
-                                    if actions[np.argmax(res)] != sentence[-1]:
-                                        sentence.append(actions[np.argmax(res)])
-                                else:
-                                    sentence.append(actions[np.argmax(res)])
+#                                 if len(sentence) > 0:
+#                                     if actions[np.argmax(res)] != sentence[-1]:
+#                                         sentence.append(actions[np.argmax(res)])
+#                                 else:
+#                                     sentence.append(actions[np.argmax(res)])
 
-                        if len(sentence) > 5:
-                            sentence = sentence[-5:]
+#                         if len(sentence) > 5:
+#                             sentence = sentence[-5:]
 
-                        # Viz probabilities
-                        # image = prob_viz(res, actions, image, colors)
+#                         # Viz probabilities
+#                         # image = prob_viz(res, actions, image, colors)
 
-                    cv2.rectangle(image, (0, 0), (640, 40), (245, 117, 16), -1)
-                    cv2.putText(image, ' '.join(sentence), (3, 30),
-                                cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+#                     cv2.rectangle(image, (0, 0), (640, 40), (245, 117, 16), -1)
+#                     cv2.putText(image, ' '.join(sentence), (3, 30),
+#                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
 
-                    cv2.putText(image, "Put your hand gestures in the rectangle", (5, 60), cv2.FONT_HERSHEY_COMPLEX,
-                                0.5, (0, 0, 0))
-                    cv2.putText(image, "Press 'q' to exit.", (5, 75), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
-                    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-                    FRAME_WINDOW.image(image)
-        else:
-            st.write('Stopped')
+#                     cv2.putText(image, "Put your hand gestures in the rectangle", (5, 60), cv2.FONT_HERSHEY_COMPLEX,
+#                                 0.5, (0, 0, 0))
+#                     cv2.putText(image, "Press 'q' to exit.", (5, 75), cv2.FONT_HERSHEY_COMPLEX, 0.5, (0, 0, 0))
+#                     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+#                     FRAME_WINDOW.image(image)
+#         else:
+#             st.write('Stopped')
 
 
 if __name__ == "__main__":
